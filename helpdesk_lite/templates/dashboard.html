@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - HelpDeskLite{% endblock %}
+{% block content %}
+<section class="header-row">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="muted">Current support workload and recently updated issues.</p>
+  </div>
+  <a class="button" href="{{ url_for('issues.create_issue') }}">Create Issue</a>
+</section>
+
+<section class="stats">
+  <div class="stat">
+    <span class="label">Open</span>
+    <strong>{{ dashboard.open_count }}</strong>
+  </div>
+  <div class="stat">
+    <span class="label">Closed</span>
+    <strong>{{ dashboard.closed_count }}</strong>
+  </div>
+</section>
+
+<section>
+  <h2>Recently Updated</h2>
+  {% if dashboard.recent_issues %}
+    <ul class="issue-list">
+      {% for issue in dashboard.recent_issues %}
+        <li>
+          <a href="{{ url_for('issues.view_issue', issue_id=issue.id) }}">{{ issue.title }}</a>
+          <span class="badge {{ issue.status }}">{{ issue.status }}</span>
+          <span class="muted">{{ issue.priority }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">No issues yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

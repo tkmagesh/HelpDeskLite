@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.title }} - HelpDeskLite{% endblock %}
+{% block content %}
+<section class="header-row">
+  <div>
+    <h1>{{ issue.title }}</h1>
+    <p class="muted">Reported by {{ issue.reporter_name }} on {{ issue.created_at.strftime("%Y-%m-%d") }}</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('issues.edit_issue', issue_id=issue.id) }}">Edit</a>
+</section>
+
+<section class="detail-grid">
+  <article>
+    <h2>Description</h2>
+    <p class="description">{{ issue.description }}</p>
+  </article>
+  <aside>
+    <p><strong>Status:</strong> <span class="badge {{ issue.status }}">{{ issue.status }}</span></p>
+    <p><strong>Priority:</strong> {{ issue.priority }}</p>
+    <p><strong>Assignee:</strong> {{ issue.assignee.name if issue.assignee else "Unassigned" }}</p>
+    <form method="post" action="{{ url_for('issues.assign_issue', issue_id=issue.id) }}">
+      <label>Assign
+        <select name="user_id">
+          <option value="unassigned">Unassigned</option>
+          {% for user in users %}
+            <option value="{{ user.id }}" {% if issue.assignee_id == user.id %}selected{% endif %}>{{ user.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Update Assignee</button>
+    </form>
+    {% if issue.status == "open" %}
+      <form method="post" action="{{ url_for('issues.close_issue', issue_id=issue.id) }}">
+        <button type="submit">Close Issue</button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('issues.reopen_issue', issue_id=issue.id) }}">
+        <button type="submit">Reopen Issue</button>
+      </form>
+    {% endif %}
+  </aside>
+</section>
+
+<section>
+  <h2>Comments</h2>
+  {% if comments %}
+    {% for comment in comments %}
+      <article class="comment">
+        <strong>{{ comment.author_name }}</strong>
+        <span class="muted">{{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
+        <p>{{ comment.body }}</p>
+      </article>
+    {% endfor %}
+  {% else %}
+    <p class="empty">No comments yet.</p>
+  {% endif %}
+  <form class="stacked-form compact" method="post" action="{{ url_for('issues.add_comment', issue_id=issue.id) }}">
+    <label>Name <input name="author_name" required></label>
+    <label>Comment <textarea name="body" rows="4" required></textarea></label>
+    <button type="submit">Add Comment</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Edit Issue - HelpDeskLite{% endblock %}
+{% block content %}
+<h1>Edit Issue</h1>
+<form class="stacked-form" method="post">
+  <label>Title <input name="title" value="{{ issue.title }}" required></label>
+  <label>Priority
+    <select name="priority">
+      {% for priority in ["low", "medium", "high", "urgent"] %}
+        <option value="{{ priority }}" {% if issue.priority == priority %}selected{% endif %}>{{ priority.title() }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Description <textarea name="description" rows="8">{{ issue.description }}</textarea></label>
+  <button type="submit">Save Changes</button>
+</form>
+{% endblock %}

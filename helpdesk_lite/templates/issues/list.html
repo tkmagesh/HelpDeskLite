@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Issues - HelpDeskLite{% endblock %}
+{% block content %}
+<section class="header-row">
+  <div>
+    <h1>Issues</h1>
+    <p class="muted">Search, triage, and assign support requests.</p>
+  </div>
+  <a class="button" href="{{ url_for('issues.create_issue') }}">New Issue</a>
+</section>
+
+<form class="filters" method="get">
+  <input type="search" name="q" placeholder="Search by title" value="{{ search }}">
+  <select name="status">
+    <option value="" {% if not status %}selected{% endif %}>All statuses</option>
+    <option value="open" {% if status == "open" %}selected{% endif %}>Open</option>
+    <option value="closed" {% if status == "closed" %}selected{% endif %}>Closed</option>
+  </select>
+  <button type="submit">Search</button>
+</form>
+
+{% if rows %}
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Priority</th>
+        <th>Assignee</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td><a href="{{ url_for('issues.view_issue', issue_id=row.id) }}">{{ row.title }}</a></td>
+          <td><span class="badge {{ row.status|lower }}">{{ row.status }}</span></td>
+          <td>{{ row.priority }}</td>
+          <td>{{ row.assigned_to }}</td>
+          <td>{{ row.updated_at.strftime("%Y-%m-%d") }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="empty">No issues found.</p>
+{% endif %}
+{% endblock %}
